@@ -40,7 +40,13 @@ export default function InventoryPage() {
 	const fetchProducts = async () => {
 		try {
 			setLoading(true);
-			const { data, error } = await supabase
+			const client = supabase;
+			if (!client) {
+				console.error('Supabase not configured');
+				return;
+			}
+
+			const { data, error } = await client
 				.from('products')
 				.select('*')
 				.order('created_at', { ascending: false });
@@ -70,6 +76,11 @@ export default function InventoryPage() {
 
 		try {
 			setLoading(true);
+			const client = supabase;
+			if (!client) {
+				alert('Supabase chưa được cấu hình. Kiểm tra biến môi trường.');
+				return;
+			}
 
 			// Transform comma-separated strings to arrays
 			const sizesArray = formData.sizes
@@ -87,7 +98,7 @@ export default function InventoryPage() {
 				.map((t) => t.trim())
 				.filter((t) => t);
 
-			const { error } = await supabase.from('products').insert([
+			const { error } = await client.from('products').insert([
 				{
 					name: formData.name.trim(),
 					price: parseFloat(formData.price),
@@ -133,7 +144,13 @@ export default function InventoryPage() {
 
 		try {
 			setDeleting(id);
-			const { error } = await supabase
+			const client = supabase;
+			if (!client) {
+				alert('Supabase chưa được cấu hình.');
+				return;
+			}
+
+			const { error } = await client
 				.from('products')
 				.delete()
 				.eq('id', id);
